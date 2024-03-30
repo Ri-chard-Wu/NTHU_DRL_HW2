@@ -4,19 +4,27 @@ import tensorflow as tf
 
 
 
+para = AttrDict({
+    'action_num': len(COMPLEX_MOVEMENT), 
+    'img_shape': (120, 128, 3),
+    'k': 4,
+    'frame_shape': (120, 128, 1), 
+})
+
+
 
 class Agent:
 
-    def __init__(self, name, para):   
-        self.para = para 
-        self.model = self.build_model(name)
+    def __init__(self):   
+        # para = para 
+        self.model = self.build_model('online')
      
         self.load_checkpoint('./111022533_hw2_data')
  
     def build_model(self, name):
         # input: state
         # output: each action's Q-value
-        input_shape = [self.para.img_shape[0], self.para.img_shape[1], self.para.k]
+        input_shape = [para.img_shape[0], para.img_shape[1], para.k]
         screen_stack = tf.keras.Input(shape=input_shape, dtype=tf.float32)
 
         x = tf.keras.layers.Conv2D(filters=32, kernel_size=8, strides=4)(screen_stack) # (4, 8, 8, 32)
@@ -28,7 +36,7 @@ class Agent:
         x = tf.keras.layers.Flatten()(x)
         x = tf.keras.layers.Dense(units=256)(x)
         x = tf.keras.layers.ReLU()(x)
-        Q = tf.keras.layers.Dense(self.para.action_num)(x)
+        Q = tf.keras.layers.Dense(para.action_num)(x)
 
         model = tf.keras.Model(name=name, inputs=screen_stack, outputs=Q)
 
@@ -50,8 +58,8 @@ class Agent:
         self.model.save_weights(path)
          
     def load_checkpoint(self, path): 
-        self.model(tf.random.uniform(shape=[1, self.para.img_shape[0], self.para.img_shape[1], 
-                                                        self.para.k]))
+        self.model(tf.random.uniform(shape=[1, para.img_shape[0], para.img_shape[1], 
+                                                        para.k]))
         self.model.load_weights(path)
 
 

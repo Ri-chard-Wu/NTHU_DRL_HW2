@@ -8,9 +8,9 @@ class AttrDict(dict):
     def __getattr__(self, a):
         return self[a]
  
- 
+
 para = AttrDict({
-    'action_num': len(COMPLEX_MOVEMENT), 
+    'action_num': 12, 
     'img_shape': (120, 128, 3),
     'k': 4,
     'frame_shape': (120, 128, 1), 

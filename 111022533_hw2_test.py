@@ -52,10 +52,14 @@ class Agent:
         return tf.reduce_max(output, axis=1)
  
 
-    def select_action(self, state):   
-        output = self.model(state)
-        action = tf.argmax(output, axis=1)[0]
-        action = int(action.numpy())
+    def select_action(self, state):    
+        
+        if  np.random.rand() < 0.15:
+            action = np.random.choice(para.action_num)
+        else:
+            output = self.model(state)
+            action = tf.argmax(output, axis=1)[0]
+            action = int(action.numpy())
 
         return action
 
@@ -80,6 +84,17 @@ class Agent:
             screen = screen[..., np.newaxis] # shape is (h, w, 1)
             return screen
  
+        # def stack_frames(input_frames):
+        #     if(len(input_frames) == 1):
+        #         state = np.concatenate(input_frames*4, axis=-1)
+        #     elif(len(input_frames) == 2):
+        #         state = np.concatenate(input_frames[0:1]*2 + input_frames[1:]*2, axis=-1)
+        #     elif(len(input_frames) == 3):
+        #         state = np.concatenate(input_frames + input_frames[2:], axis=-1)
+        #     else:
+        #         state = np.concatenate(input_frames[-4:], axis=-1)
+
+
         state = np.concatenate([preprocess_screen(obs)] * 4, axis=-1)
         state = np.expand_dims(state, axis = 0)
 

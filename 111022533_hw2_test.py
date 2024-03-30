@@ -4,6 +4,11 @@ import tensorflow as tf
 
 
 
+class AttrDict(dict):
+    def __getattr__(self, a):
+        return self[a]
+ 
+ 
 para = AttrDict({
     'action_num': len(COMPLEX_MOVEMENT), 
     'img_shape': (120, 128, 3),

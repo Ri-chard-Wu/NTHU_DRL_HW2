@@ -100,13 +100,13 @@ class Agent:
             # print(f'c state.shape: {state.shape}')
             return state
 
-
-        if(len(self.recent_frames) >= 4): self.recent_frames.pop(0)
-        self.recent_frames.append(preprocess_screen(obs))
-
         if(self.i >= self.skip):
 
             self.i = 0
+
+            if(len(self.recent_frames) >= 4): self.recent_frames.pop(0)
+            self.recent_frames.append(preprocess_screen(obs))
+                        
 
             if  np.random.rand() < 0.1:
                 action = np.random.choice(para.action_num)
@@ -124,7 +124,6 @@ class Agent:
         else:
             self.i += 1
             return self.prev_action
-
 
 
 

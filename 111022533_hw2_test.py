@@ -13,6 +13,7 @@ para = AttrDict({
     'action_num': 12, 
     'img_shape': (84, 84, 3),
     'k': 4, 
+    'skip': 4
 })
 
 
@@ -41,8 +42,8 @@ class Agent:
         self.load_checkpoint('./111022533_hw2_data')
  
 
-        self.skip = 4
-        self.i = 0
+        self.skip = para.skip  
+        self.i = para.skip
         self.prev_action = 1
         self.recent_frames = []
 
@@ -96,32 +97,18 @@ class Agent:
 
     def act(self, obs):
 
-        def stack_frames(input_frames):
-            if(len(input_frames) == 1):
-                state = np.concatenate(input_frames*4, axis=-1)
-            elif(len(input_frames) == 2):
-                state = np.concatenate(input_frames[0:1]*2 + input_frames[1:]*2, axis=-1)
-            elif(len(input_frames) == 3):
-                state = np.concatenate(input_frames + input_frames[2:], axis=-1)
-            else:
-                state = np.concatenate(input_frames[-4:], axis=-1)
-            # print(f'c state.shape: {state.shape}')
-            return state
-
         if(self.i >= self.skip):
 
-            self.i = 0
+            self.i = 1
 
             if(len(self.recent_frames) >= para.k): self.recent_frames.pop(0)
             self.recent_frames.append(preprocess_screen(obs))
-                        
-
-            if  np.random.rand() < 0.1:
+ 
+            if  np.random.rand() < 0.01:
                 action = np.random.choice(para.action_num)
             else:
-                # state = np.concatenate([preprocess_screen(obs)] * 4, axis=-1)
-                state = stack_frames(self.recent_frames) 
-                state = np.expand_dims(state, axis = 0)  
+                d = len(self.recent_frames)
+                state = np.concatenate([np.zeros_like(self.recent_frames[0])[np.newaxis,...]]*(para.k-d)  + [i[np.newaxis,...] for i in self.recent_frames], axis=3)
                 assert state.shape == (1, para.img_shape[0], para.img_shape[1], para.k)            
                 action = self.select_action(state / 255.0)
 
@@ -132,6 +119,3 @@ class Agent:
         else:
             self.i += 1
             return self.prev_action
-
-
- 

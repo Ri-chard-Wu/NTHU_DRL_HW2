@@ -52,7 +52,7 @@ class Agent:
     def build_model(self, name):
         # input: state
         # output: each action's Q-value
-        input_shape = [self.para.img_shape[0], self.para.img_shape[1], self.para.k]
+        input_shape = [para.img_shape[0], para.img_shape[1], para.k]
         screen_stack = tf.keras.Input(shape=input_shape, dtype=tf.float32)
 
         x = tf.keras.layers.Conv2D(filters=32, kernel_size=8, strides=4)(screen_stack) # (4, 8, 8, 32)
@@ -71,7 +71,7 @@ class Agent:
         x = tf.keras.layers.ReLU()(x)
         
 
-        adv = tf.keras.layers.Dense(self.para.action_num)(x)
+        adv = tf.keras.layers.Dense(para.action_num)(x)
         v = tf.keras.layers.Dense(1)(x)
 
         model = tf.keras.Model(name=name, inputs=screen_stack, outputs=[adv, v])
@@ -104,7 +104,7 @@ class Agent:
 
 
     def act(self, obs):
-
+        
         if(self.i >= self.skip):
 
             self.i = 1

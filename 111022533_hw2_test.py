@@ -47,12 +47,12 @@ class Agent:
         self.i = para.skip
         self.prev_action = 1
         self.recent_frames = []
-
-
-    def build_model(self, name):
+ 
+ 
+     def build_model(self, name):
         # input: state
         # output: each action's Q-value
-        input_shape = [para.img_shape[0], para.img_shape[1], para.k]
+        input_shape = [self.para.img_shape[0], self.para.img_shape[1], self.para.k]
         screen_stack = tf.keras.Input(shape=input_shape, dtype=tf.float32)
 
         x = tf.keras.layers.Conv2D(filters=32, kernel_size=8, strides=4)(screen_stack) # (4, 8, 8, 32)
@@ -70,22 +70,29 @@ class Agent:
         x = tf.keras.layers.Dense(units=512)(x)
         x = tf.keras.layers.ReLU()(x)
         
-        Q = tf.keras.layers.Dense(para.action_num)(x)
 
-        model = tf.keras.Model(name=name, inputs=screen_stack, outputs=Q)
+        adv = tf.keras.layers.Dense(self.para.action_num)(x)
+        v = tf.keras.layers.Dense(1)(x)
+
+        model = tf.keras.Model(name=name, inputs=screen_stack, outputs=[adv, v])
 
         return model
  
+    def q(self, state):
+        adv, v = self.model(state)
+        q = v + (adv - tf.reduce_mean(adv, axis=1, keepdims=True))
+        return q
  
- 
+    def select_action(self, state):  
 
-    def select_action(self, state):    
- 
-        output = self.model(state)
-        action = tf.argmax(output, axis=1)[0]
+        # state = np.expand_dims(state, axis = 0)
+        q = self.q(state)        
+
+        action = tf.argmax(q, axis=1)[0]
         action = int(action.numpy())
 
         return action
+ 
 
     def save_checkpoint(self, path):  
         self.model.save_weights(path)

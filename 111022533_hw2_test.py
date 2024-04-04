@@ -49,7 +49,7 @@ class Agent:
         self.recent_frames = []
  
  
-     def build_model(self, name):
+    def build_model(self, name):
         # input: state
         # output: each action's Q-value
         input_shape = [self.para.img_shape[0], self.para.img_shape[1], self.para.k]

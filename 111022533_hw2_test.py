@@ -70,6 +70,11 @@ class Agent:
         x = tf.keras.layers.Dense(units=512)(x)
         x = tf.keras.layers.ReLU()(x)
         
+        x = tf.keras.layers.Dense(units=512)(x)
+        x = tf.keras.layers.ReLU()(x)
+
+        x = tf.keras.layers.Dense(units=512)(x)
+        x = tf.keras.layers.ReLU()(x)
 
         adv = tf.keras.layers.Dense(para.action_num)(x)
         v = tf.keras.layers.Dense(1)(x)
@@ -112,7 +117,7 @@ class Agent:
             if(len(self.recent_frames) >= para.k): self.recent_frames.pop(0)
             self.recent_frames.append(preprocess_screen(obs))
  
-            if  np.random.rand() < 0.01:
+            if  np.random.rand() < 0.001:
                 action = np.random.choice(para.action_num)
             else:
                 d = len(self.recent_frames)
